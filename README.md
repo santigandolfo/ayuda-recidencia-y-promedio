@@ -11,6 +11,5 @@ $ pip3 install unidecode
 ## Run
 
 ```bash
-$ python3 programa.py
+$ python3 program.py
 ```
-
