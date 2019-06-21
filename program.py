@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import csv
 import unidecode
 
@@ -33,21 +34,6 @@ def write_file(new_table_path, new_table):
             new_file.write("%s\n" % line)
 
 
-def verify_sex(path, out_path, males_path, females_path):
-    new_table = []
-    male_names , female_names, shared_names = generate_list_of_male_female_and_shared_names_2(males_path, females_path)
-    with open(path) as file:
-        table_csv = csv.reader(file, delimiter=",")
-        next(table_csv)
-        for surname,name,id,speciality,average,location,score,sex,nationality in table_csv:
-            first_name = unidecode.unidecode(name.split()[0] ).lower()
-            my_sex = get_sex(name, male_names , female_names, shared_names)
-            if str(sex) != str(my_sex):
-                line = "%s != %s, %s %s" % (my_sex, sex, name, surname)
-                new_table.append(line)
-                print(line)
-    write_file(out_path, new_table)
-
 def get_sex(name, male_names , female_names, shared_names):
     sex = None
     first_name = unidecode.unidecode(name.split()[0] ).lower()
@@ -70,6 +56,24 @@ def get_sex(name, male_names , female_names, shared_names):
         sex = "ND"
     return sex
 
+# The source file must have the following columns:
+# surname,name,id,speciality,average,location,score,sex,nationality
+def verify_sex(path, out_path, males_path, females_path):
+    new_table = []
+    male_names , female_names, shared_names = generate_list_of_male_female_and_shared_names_2(males_path, females_path)
+    with open(path) as file:
+        table_csv = csv.reader(file, delimiter=",")
+        next(table_csv)
+        for surname,name,id,speciality,average,location,score,sex,nationality in table_csv:
+            first_name = unidecode.unidecode(name.split()[0] ).lower()
+            my_sex = get_sex(name, male_names , female_names, shared_names)
+            if str(sex) != str(my_sex):
+                line = "%s != %s, %s %s" % (my_sex, sex, name, surname)
+                new_table.append(line)
+    write_file(out_path, new_table)
+
+# The source file must have the following columns:
+# surname,name,id,speciality,average,location,score,nationality
 def add_sex_to_table(table_path, new_table_path, males_path, females_path):
         new_table = []
         male_names, female_names, shared_names = generate_list_of_male_female_and_shared_names_2(males_path, females_path)
@@ -85,9 +89,38 @@ def add_sex_to_table(table_path, new_table_path, males_path, females_path):
                 str_line = line = ','.join(map(str, line))
                 new_table.append(str_line)
 
-        print("Number of undefined names: %s" % number_of_undefined)
-
         write_file(new_table_path, new_table)
 
-#add_sex_to_table("bd_unico.csv", "new_bd_unico.csv","hombres.csv", "mujeres.csv")
-verify_sex("BD GRUPO 1.xlsx - BD Unico.csv", "different.csv","hombres.csv", "mujeres.csv")
+
+def main(function, source, destination):
+
+    if function == "agregar-columna-sexo":
+        add_sex_to_table(source, destination,"hombres.csv", "mujeres.csv")
+    elif function == "vefificar-sexo":
+        verify_sex(source, destination,"hombres.csv", "mujeres.csv")
+
+def parse_input(params):
+
+    if len(params) != 4:
+        print("Error: cantidad insuficiente de parámetros")
+        print("Formato: program.py [function] [source] [destination]")
+        return None
+
+    function = params[1]
+    source = params[2]
+    destination = params[3]
+
+    return {
+            "function": function,
+            "source": source,
+            "destination": destination,
+    }
+
+if __name__ == "__main__":
+
+    params = parse_input(sys.argv)
+
+    if params is not None:
+        main(params["function"],
+             params["source"],
+             params["destination"])
