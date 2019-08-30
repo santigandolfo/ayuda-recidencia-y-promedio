@@ -5,6 +5,10 @@ import sys
 import csv
 import unidecode
 
+
+# Input: The path of the male names table and the female names
+# Output: Three sets, one for the male names, one for the female names
+# and one for all the names which were originally in both tables
 def generate_list_of_male_female_and_shared_names_2(males_path, females_path):
     male_names = set()
     female_names = set()
@@ -28,12 +32,16 @@ def generate_list_of_male_female_and_shared_names_2(males_path, females_path):
 
     return male_names, female_names, shared_names
 
+# Input: List of the elements to be writen in the file
+# Output: CSV file with the elements from the table
 def write_file(new_table_path, new_table):
     with open(new_table_path, "w") as new_file:
         for line in new_table:
             new_file.write("%s\n" % line)
 
-
+# Input: The name of the person, the path of the male names table
+# and the path of the female names
+# Output: The estimated sex of the person given their name
 def get_sex(name, male_names , female_names, shared_names):
     sex = None
     first_name = unidecode.unidecode(name.split()[0] ).lower()
@@ -56,6 +64,11 @@ def get_sex(name, male_names , female_names, shared_names):
         sex = "ND"
     return sex
 
+# Input: The source path of the source table, a path for
+# the generated table, the path of the male names table
+# and the path of the female names
+# Output: A new table with every person whos sex diferes from
+# the sex originally given in the table
 # The source file must have the following columns:
 # surname,name,id,speciality,average,location,score,sex,nationality
 def verify_sex(path, out_path, males_path, females_path):
@@ -72,6 +85,11 @@ def verify_sex(path, out_path, males_path, females_path):
                 new_table.append(line)
     write_file(out_path, new_table)
 
+# Input: The source path of the source table, a path for
+# the generated table, the path of the male names table
+# and the path of the female names
+# Output: A new table with a new column specifying the sex
+# of the people in original table
 # The source file must have the following columns:
 # surname,name,id,speciality,average,location,score,nationality
 def add_sex_to_table(table_path, new_table_path, males_path, females_path):
