@@ -23,4 +23,4 @@ $ python3 program.py vefificar-sexo bd-grupo-1.csv destination.csv
 ```
 
 La base de datos con la informacióm de los nombres hombres y mujeres fue obtenida del siguiente repositorio:
-[marcboquet/spanish-names]: (https://github.com/marcboquet/spanish-names/blob/master/hombres.csv)
+[marcboquet/spanish-names](https://github.com/marcboquet/spanish-names/blob/master/hombres.csv)
